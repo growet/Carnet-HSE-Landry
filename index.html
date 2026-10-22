@@ -1,0 +1,798 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Carnet HSE Pont</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: masthead sombre + onglets collants, contenu en cartes sobres. Palette inspirée de la signalisation de chantier. */
+:root{
+  --bg:#E8EAE6; --surface:#F6F7F4; --ink:#172023; --ink2:#52605F; --line:#C9CEC8;
+  --head:#10171A; --head-ink:#EEF1EC; --head-dim:#9FB0B3;
+  --accent:#0A5CA8; --accent-ink:#FFFFFF;
+  --stripe-a:#F2B705; --stripe-b:#10171A;
+  --ok:#1F7A45; --ok-bg:#CFE8D8; --warn:#8A6100; --warn-bg:#F3E2AE; --high:#B34E0C; --high-bg:#F7CFAD; --crit:#B3261E; --crit-bg:#F5C0BA;
+  --f-display:"Barlow Condensed","Roboto Condensed","Arial Narrow","Helvetica Neue",sans-serif-condensed,Arial,sans-serif; --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif; --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1416; --surface:#192024; --ink:#E6EBE7; --ink2:#9BA8A8; --line:#2B3639;
+    --head:#0A0F11; --stripe-b:#0A0F11;
+    --accent:#6DB3F2; --accent-ink:#06182A;
+    --ok:#5CC386; --ok-bg:#1D4630; --warn:#E3B24D; --warn-bg:#5A4814; --high:#F39253; --high-bg:#6A3813; --crit:#FF8077; --crit-bg:#702622;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1416; --surface:#192024; --ink:#E6EBE7; --ink2:#9BA8A8; --line:#2B3639;
+  --head:#0A0F11; --stripe-b:#0A0F11;
+  --accent:#6DB3F2; --accent-ink:#06182A;
+  --ok:#5CC386; --ok-bg:#1D4630; --warn:#E3B24D; --warn-bg:#5A4814; --high:#F39253; --high-bg:#6A3813; --crit:#FF8077; --crit-bg:#702622;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--head)}
+.wrap{max-width:940px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;line-height:1.1;margin:0;text-wrap:balance}
+h2{font-size:28px;letter-spacing:.01em}
+h3{font-size:20px;letter-spacing:.02em}
+p{margin:0}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+
+.mast{background:var(--head);color:var(--head-ink)}
+.mast .wrap{padding-block:22px 18px}
+.eyebrow{font-family:var(--f-display);font-weight:600;font-size:14px;letter-spacing:.18em;text-transform:uppercase;color:var(--stripe-a)}
+.mast h1{font-size:clamp(38px,9vw,60px);text-transform:uppercase;letter-spacing:.01em;margin-top:4px}
+.sub{color:var(--head-dim);margin-top:6px;font-size:14px;min-height:21px}
+.stripe{height:9px;background:repeating-linear-gradient(135deg,var(--stripe-a) 0 12px,var(--stripe-b) 12px 24px)}
+
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--head);border-bottom:1px solid #000}
+.tabrow{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tabrow::-webkit-scrollbar{display:none}
+.tab{flex:0 0 auto;background:none;border:0;border-bottom:4px solid transparent;color:var(--head-dim);font-family:var(--f-display);font-weight:600;font-size:17px;letter-spacing:.06em;text-transform:uppercase;padding:12px 12px 8px;cursor:pointer}
+.tab[aria-selected="true"]{color:var(--head-ink);border-bottom-color:var(--stripe-a)}
+
+main{padding-block:20px 12px;display:grid;gap:16px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:16px;min-width:0}
+.card>h2,.card>h3{margin-bottom:10px}
+.lead{color:var(--ink2);max-width:62ch}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.field{display:grid;gap:4px;min-width:0}
+.field label,.lbl{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
+input[type=text],input[type=number],input[type=date],input[type=time],select,textarea{width:100%;background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:9px 10px;min-height:42px}
+textarea{resize:vertical;min-height:84px}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:4px;padding:10px 16px;font-weight:600;cursor:pointer;min-height:42px}
+.btn.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:6px 10px;min-height:34px;font-size:13px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:7px 11px;cursor:pointer;font-weight:500;font-size:14px;display:inline-flex;gap:8px;align-items:center}
+.chip.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.chipn{font-family:var(--f-mono);font-size:12px;opacity:.8}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.tile{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:14px;display:grid;gap:2px;align-content:start}
+.tile .v{font-family:var(--f-display);font-weight:700;font-size:44px;line-height:1}
+.tile .k{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink2)}
+.tile .n{font-size:13px;color:var(--ink2)}
+.tile.crit{background:var(--crit-bg)} .tile.ok{background:var(--ok-bg)} .tile.warn{background:var(--warn-bg)}
+
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:4px;padding:2px 8px;font-size:12px;font-weight:600;font-family:var(--f-mono);color:var(--ink)}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor;opacity:.9}
+.l1{background:var(--ok-bg)} .l1::before{color:var(--ok)}
+.l2{background:var(--warn-bg)} .l2::before{color:var(--warn)}
+.l3{background:var(--high-bg)} .l3::before{color:var(--high)}
+.l4{background:var(--crit-bg)} .l4::before{color:var(--crit)}
+
+.mat{display:grid;grid-template-columns:auto repeat(5,minmax(0,1fr));gap:4px;align-items:stretch;max-width:520px}
+.mat .ax{font-size:11px;color:var(--ink2);display:grid;place-items:center;text-align:center;font-weight:600}
+.mat button.c{aspect-ratio:1.25;border:2px solid transparent;border-radius:4px;color:var(--ink);font-family:var(--f-mono);font-size:16px;cursor:pointer;display:grid;place-items:center;padding:0}
+.mat button.c.sel{border-color:var(--ink)}
+.mat button.c.l1{background:var(--ok-bg)} .mat button.c.l2{background:var(--warn-bg)} .mat button.c.l3{background:var(--high-bg)} .mat button.c.l4{background:var(--crit-bg)}
+.mat button.c::before{display:none}
+.axlbl{font-size:12px;color:var(--ink2);margin-top:6px}
+
+details.rk{border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+details.rk>summary{list-style:none;cursor:pointer;padding:12px 14px;display:grid;gap:6px}
+details.rk>summary::-webkit-details-marker{display:none}
+.rk-t{font-weight:600;font-size:16px}
+.rk-m{display:flex;gap:8px;flex-wrap:wrap;align-items:center;font-size:13px;color:var(--ink2)}
+.rk-b{padding:4px 14px 14px;display:grid;gap:12px;border-top:1px solid var(--line)}
+ul.ctl{margin:0;padding-left:18px;display:grid;gap:4px}
+
+ul.list{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.it{border:1px solid var(--line);border-radius:6px;padding:12px;display:grid;gap:10px;background:var(--surface)}
+.it.s-ok{border-left:6px solid var(--ok)} .it.s-nc{border-left:6px solid var(--crit);background:var(--crit-bg)} .it.s-na{opacity:.7}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.seg button{flex:1 1 90px;background:var(--bg);border:1px solid var(--line);border-radius:4px;min-height:40px;font-weight:600;font-size:13px;cursor:pointer}
+.seg button[aria-pressed="true"][data-v="ok"]{background:var(--ok);border-color:var(--ok);color:#fff}
+.seg button[aria-pressed="true"][data-v="nc"]{background:var(--crit);border-color:var(--crit);color:#fff}
+.seg button[aria-pressed="true"][data-v="na"]{background:var(--ink2);border-color:var(--ink2);color:var(--surface)}
+.bar{height:8px;background:var(--bg);border:1px solid var(--line);border-radius:4px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--ok)}
+
+.chk{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:6px;background:var(--surface);cursor:pointer}
+.chk input{width:22px;height:22px;margin-top:1px;flex:none;accent-color:var(--accent)}
+.status{border-radius:6px;padding:12px 14px;font-weight:600}
+.status.go{background:var(--ok-bg)} .status.stop{background:var(--warn-bg)}
+.out{font-family:var(--f-mono);font-size:13px;white-space:pre-wrap;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:12px;min-width:0;overflow-x:auto}
+.mono{font-family:var(--f-mono)}
+.tag{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2)}
+.log{display:grid;gap:8px}
+.log>div{display:flex;gap:10px;justify-content:space-between;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:8px}
+.warnbox{background:var(--warn-bg);border-radius:6px;padding:10px 12px;font-size:14px}
+details.acc{border:1px solid var(--line);border-radius:6px;background:var(--surface)}
+details.acc>summary{cursor:pointer;padding:12px 14px;font-weight:600}
+details.acc>div{padding:0 14px 14px;display:grid;gap:6px}
+.steps{margin:0;padding-left:20px;display:grid;gap:6px}
+footer{padding-block:6px 40px;color:var(--ink2);font-size:13px}
+@media (prefers-reduced-motion:no-preference){.bar i{transition:width .25s ease}}
+
+/* Impression / PDF */
+#printArea{display:none}
+@media print{
+  @page{size:A4;margin:12mm}
+  html,body{background:#fff!important;color:#000!important}
+  body::before{display:none!important}
+  .mast,.tabs,main,footer{display:none!important}
+  #printArea{display:block!important;font:10.5px/1.4 Arial,Helvetica,sans-serif;color:#000;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  #printArea h1{font:700 24px Arial,Helvetica,sans-serif;margin:0 0 2px;text-transform:uppercase;border-bottom:4px solid #F2B705;padding-bottom:4px}
+  #printArea h2{font:700 14px Arial,Helvetica,sans-serif;margin:16px 0 6px;padding:3px 6px;background:#10171A;color:#fff;page-break-after:avoid}
+  #printArea h3{font:700 11.5px Arial,Helvetica,sans-serif;margin:10px 0 4px;page-break-after:avoid}
+  #printArea .pm{color:#444;font-weight:400;font-size:10.5px;margin:0 0 8px}
+  #printArea table{width:100%;border-collapse:collapse;margin:0 0 6px}
+  #printArea th,#printArea td{border:1px solid #888;padding:3px 5px;text-align:left;vertical-align:top}
+  #printArea th{background:#E3E6E1;font-weight:700}
+  #printArea tr{page-break-inside:avoid}
+  #printArea ul{margin:4px 0;padding-left:18px}
+  #printArea .pl1{background:#CFE8D8}
+  #printArea .pl2{background:#F3E2AE}
+  #printArea .pl3{background:#F7CFAD}
+  #printArea .pl4{background:#F5C0BA}
+  #printArea .sig{display:flex;gap:24px;margin-top:28px;page-break-inside:avoid}
+  #printArea .sig>div{flex:1}
+  #printArea .sig span{display:block;border-bottom:1px solid #000;height:46px}
+}
+</style>
+
+<header class="mast">
+  <div class="wrap">
+    <p class="eyebrow">Hygiène · Sécurité · Environnement</p>
+    <h1>Carnet HSE Pont</h1>
+    <p class="sub" id="hSub"></p>
+  </div>
+  <div class="stripe"></div>
+</header>
+<nav class="tabs" aria-label="Sections"><div class="wrap tabrow" id="tabs" role="tablist"></div></nav>
+<main class="wrap" id="main"></main>
+<div id="printArea"></div>
+<footer class="wrap">
+  <p>Les données sont enregistrées sur cet appareil, dans ce navigateur. Pensez à les sauvegarder régulièrement depuis l'onglet Exports. Ce carnet complète le plan HSE du projet, la réglementation en vigueur et les procédures de l'entreprise, sans les remplacer. Adaptez les seuils aux notices des constructeurs et aux exigences du maître d'ouvrage.</p>
+</footer>
+
+<script>
+(function(){
+"use strict";
+var $=function(s){return document.querySelector(s)};
+var esc=function(s){return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})};
+var fmt=function(n,d){return n.toLocaleString("fr-FR",{maximumFractionDigits:d==null?2:d})};
+
+/* ---------- Données de référence ---------- */
+var CHK=[
+{id:"fond",name:"Fondations et terrassement",items:[
+"Étude de sol et plan de terrassement disponibles sur site",
+"Réseaux enterrés et aériens repérés (plans, détection) et balisés",
+"Talus ou blindage conformes à la nature du sol",
+"Déblais et matériaux stockés à distance du bord de fouille",
+"Accès à la fouille sécurisé (échelle ou escalier) et barrières périphériques",
+"Pompage et drainage actifs en fond de fouille",
+"Zone de battage ou de forage balisée, protections auditives distribuées",
+"Engins : contrôle visuel fait, avertisseur de recul, signaleur désigné",
+"Fouille inspectée par une personne compétente avant chaque poste, et après pluie"]},
+{id:"eau",name:"Travaux sur l'eau et batardeaux",items:[
+"Gilet de sauvetage porté par tous au bord de l'eau et sur l'eau",
+"Bouées avec ligne et échelles de remontée à portée de main",
+"Embarcation de sauvetage et pilote disponibles à proximité",
+"Travail isolé interdit : binôme obligatoire",
+"Passerelles et pontons : garde-corps, planchers antidérapants",
+"Niveau d'eau et prévision de crue relevés avant le poste",
+"Batardeau ou palplanches : stabilité et étanchéité contrôlées",
+"Interventions de plongée planifiées, certificats valides, surveillant en surface",
+"Balisage nautique en place, tiers informés (pêcheurs, pirogues)"]},
+{id:"beton",name:"Coffrage, ferraillage, bétonnage",items:[
+"Note de calcul d'étaiement et de coffrage disponible, plan respecté",
+"Étais et cintres contrôlés avant coulage (aplomb, calage, contreventement)",
+"Plan de bétonnage et ordre de coulage validés",
+"Embouts de protection sur les aciers en attente",
+"Pompe à béton stabilisée, flexible attaché, zone de manœuvre interdite au public",
+"Travaux de soudage ou de coupage : permis de travail à chaud délivré",
+"Protection contre le béton frais (gants, bottes, lunettes), rinçage oculaire disponible",
+"Vibreurs et outils électriques : câbles en bon état, protection différentielle",
+"Décoffrage uniquement sur accord écrit du responsable"]},
+{id:"levage",name:"Levage et grutage",items:[
+"Plan de levage établi pour les charges critiques ou complexes",
+"Grue : vérification périodique à jour, opérateur habilité, carnet à bord",
+"Sol ou plateforme portants, calage et stabilisateurs sortis",
+"Élingues, manilles, palonniers vérifiés (marquage, état, charge maximale)",
+"Anémomètre en service, arrêt du levage au seuil fixé par la notice du constructeur",
+"Signaleur ou élingueur désigné, communication radio ou gestes codifiés",
+"Zone sous charge balisée, personne sous les charges suspendues : zéro",
+"Distance de sécurité aux lignes électriques respectée",
+"Levage en tandem ou en zone d'exclusion validé par l'ingénieur responsable"]},
+{id:"hauteur",name:"Travail en hauteur et échafaudages",items:[
+"Garde-corps ou filets en place avant toute intervention au bord",
+"Harnais avec double longe porté et accroché à un point d'ancrage certifié",
+"Échafaudage réceptionné et étiqueté par une personne compétente",
+"Trappes et trémies fermées ou protégées et signalées",
+"Plinthes et filets contre la chute d'objets",
+"Outils attachés ou rangés dans un sac lors du travail en hauteur",
+"Matériel de sauvetage en hauteur disponible, personnel formé",
+"Arrêt des travaux en cas de vent fort, d'orage ou de plancher glissant",
+"Aptitude médicale au travail en hauteur à jour pour les intervenants"]},
+{id:"precon",name:"Précontrainte et lancement",items:[
+"Procédure de mise en tension validée par l'ingénieur",
+"Vérins et pompes étalonnés, flexibles et raccords contrôlés",
+"Zone derrière les ancrages interdite pendant la mise en tension",
+"Protection physique en bout de câbles et de vérins",
+"Opérateurs formés, communication radio ou signaux convenus",
+"Cales et dispositifs de blocage vérifiés avant relâchement",
+"Lancement ou poussée : plan de manœuvre, signalisation, arrêt d'urgence testé"]},
+{id:"engins",name:"Engins, électricité, circulation",items:[
+"Plan de circulation affiché, cheminements piétons séparés des engins",
+"Engins : visite quotidienne faite, klaxon, feux, ceinture, extincteur",
+"Conducteurs : habilitation ou autorisation interne valide",
+"Armoires électriques fermées, différentiels testés, câbles surélevés",
+"Consignation électrique avant travaux : cadenas et étiquettes en place",
+"Éclairage suffisant pour le travail de nuit ou en zone sombre",
+"Téléphone et écouteurs interdits en zone d'engins",
+"Signalisation routière et déviations pour la circulation publique"]},
+{id:"env",name:"Environnement et santé",items:[
+"Bacs de rétention sous les cuves et le stockage d'hydrocarbures",
+"Kits anti-pollution à proximité des zones à risque",
+"Déchets triés, stockés et évacués par une filière autorisée",
+"Eaux de lavage béton collectées, aucun rejet direct au cours d'eau",
+"Arrosage des pistes pour limiter les poussières",
+"Eau potable, ombre et zones de repos pour les périodes de forte chaleur",
+"Sanitaires, vestiaires et points de lavage des mains propres",
+"Trousse de secours complète, secouristes identifiés",
+"Prévention du paludisme : eaux stagnantes drainées, répulsifs disponibles"]}
+];
+
+var RISKS=[
+{id:"r1",t:"Chute de hauteur (tablier, piles, coffrages)",ph:"Hauteur",g:5,p:4,g2:5,p2:2,ctl:["Garde-corps et filets avant toute activité en bordure","Double longe et points d'ancrage certifiés","Permis de travail en hauteur et plan de sauvetage","Formation et aptitude médicale"]},
+{id:"r2",t:"Chute à l'eau et noyade",ph:"Eau",g:5,p:3,g2:5,p2:1,ctl:["Gilet de sauvetage obligatoire à l'approche de l'eau","Bouées, échelles et embarcation de sauvetage prêtes","Binôme obligatoire, jamais seul","Suivi du niveau d'eau avant chaque poste"]},
+{id:"r3",t:"Chute d'objets et de matériaux",ph:"Hauteur",g:4,p:4,g2:4,p2:2,ctl:["Plinthes, filets et protections sous les zones de travail","Outils attachés, matériaux arrimés","Zone sous les travaux balisée et interdite","Casque avec jugulaire en zone de travail en hauteur"]},
+{id:"r4",t:"Renversement de grue et chute de charge",ph:"Levage",g:5,p:3,g2:5,p2:1,ctl:["Plan de levage et étude de la plateforme portante","Arrêt au vent selon la notice du constructeur","Élingues contrôlées, signaleur désigné","Interdiction de passer sous la charge"]},
+{id:"r5",t:"Éboulement de fouille ou de talus",ph:"Terrassement",g:5,p:3,g2:5,p2:1,ctl:["Blindage ou talutage adaptés au sol","Déblais éloignés du bord","Inspection avant chaque poste et après pluie","Accès et sortie de secours à moins de quelques mètres"]},
+{id:"r6",t:"Effondrement de coffrage ou d'étaiement",ph:"Béton",g:5,p:3,g2:5,p2:1,ctl:["Note de calcul et plan d'étaiement","Contrôle avant coulage par personne compétente","Cadence de bétonnage conforme au plan","Décoffrage sur accord écrit"]},
+{id:"r7",t:"Électrisation (lignes aériennes, outillage, armoires)",ph:"Électricité",g:5,p:2,g2:5,p2:1,ctl:["Distance de sécurité aux lignes, balisage","Différentiels testés, câbles surélevés","Consignation avec cadenas personnels","Personnel habilité uniquement"]},
+{id:"r8",t:"Collision engins et piétons",ph:"Circulation",g:4,p:4,g2:4,p2:2,ctl:["Plan de circulation, voies piétons séparées","Avertisseur de recul et signaleur","Gilets haute visibilité","Limitation de vitesse sur le chantier"]},
+{id:"r9",t:"Rupture ou éjection de câble de précontrainte",ph:"Précontrainte",g:5,p:2,g2:5,p2:1,ctl:["Zone interdite derrière les ancrages","Pare-éclats et protections physiques","Étalonnage des vérins","Procédure écrite de mise en tension"]},
+{id:"r10",t:"Espace confiné (caissons, pieux creux)",ph:"Confiné",g:5,p:2,g2:5,p2:1,ctl:["Permis d'entrée en espace confiné","Mesure d'atmosphère avant et pendant","Surveillant extérieur permanent","Équipement de sauvetage prêt"]},
+{id:"r11",t:"Poussières, bruit et vibrations (battage, démolition)",ph:"Santé",g:3,p:4,g2:3,p2:2,ctl:["Arrosage et captage des poussières","Masques adaptés et protections auditives","Rotation des postes exposés","Suivi médical du personnel"]},
+{id:"r12",t:"Travaux à chaud (soudage, oxycoupage)",ph:"Feu",g:4,p:3,g2:4,p2:1,ctl:["Permis feu","Extincteur adapté à portée","Surveillant maintenu après la fin des travaux","Bouteilles de gaz arrimées avec clapets anti-retour"]},
+{id:"r13",t:"Stress thermique et déshydratation",ph:"Santé",g:3,p:4,g2:3,p2:2,ctl:["Eau potable fraîche à proximité","Pauses à l'ombre, horaires adaptés","Formation aux signes du coup de chaleur","Surveillance des nouveaux arrivants"]},
+{id:"r14",t:"Manutention manuelle et troubles musculo-squelettiques",ph:"Ergonomie",g:2,p:5,g2:2,p2:3,ctl:["Aides mécaniques pour ronds et banches","Rotation des tâches","Charges maximales par personne définies","Échauffement avant le poste"]},
+{id:"r15",t:"Déversement d'hydrocarbures et pollution de l'eau",ph:"Environnement",g:3,p:3,g2:2,p2:2,ctl:["Bacs de rétention et zones de ravitaillement étanches","Kits anti-pollution","Interdiction de rejet direct au cours d'eau","Formation à la réaction en cas de fuite"]},
+{id:"r16",t:"Crue, orage et foudre",ph:"Météo",g:5,p:2,g2:5,p2:1,ctl:["Suivi météo et seuils d'arrêt écrits","Plan d'évacuation du lit et des plateformes","Alerte sonore et point de rassemblement","Matériel sécurisé avant l'événement"]},
+{id:"r17",t:"Paludisme et piqûres d'insectes",ph:"Santé",g:3,p:3,g2:3,p2:2,ctl:["Drainage des eaux stagnantes","Répulsifs et vêtements couvrants","Information et dépistage rapide en cas de fièvre","Moustiquaires aux logements du chantier"]},
+{id:"r18",t:"Circulation publique et tiers autour du chantier",ph:"Circulation",g:4,p:3,g2:4,p2:1,ctl:["Déviations et signalisation temporaire conformes","Clôtures et balisage en continu","Contrôle des accès","Information riveraine"]}
+];
+
+var PERMITS={
+hauteur:{n:"Travail en hauteur",c:["Points d'ancrage vérifiés","EPI antichute contrôlés (harnais, longes, absorbeurs)","Protections collectives en place","Zone sous les travaux balisée","Plan de sauvetage et matériel disponibles","Météo compatible (vent, pluie, orage)","Personnel formé et apte"]},
+chaud:{n:"Travaux à chaud",c:["Zone dégagée de tout matériau inflammable","Extincteur adapté à portée de main","Bouteilles arrimées, clapets anti-retour posés","Surveillant incendie désigné","Surveillance maintenue après la fin des travaux","Écrans de protection installés","Ventilation ou extraction des fumées"]},
+confine:{n:"Espace confiné",c:["Énergies et fluides isolés","Atmosphère mesurée (O₂, gaz explosifs, toxiques) avant l'entrée et en continu","Ventilation mécanique en marche","Surveillant à l'extérieur en permanence","Moyen de communication testé","Équipement de sauvetage prêt (trépied, treuil)","Liste des personnes autorisées à l'intérieur établie"]},
+fouille:{n:"Fouille et excavation",c:["Réseaux repérés et balisés","Blindage ou talutage conforme","Accès et sortie sécurisés","Déblais à distance du bord","Pompage en service","Barrières périphériques posées","Inspection de la personne compétente consignée"]},
+levage:{n:"Levage exceptionnel",c:["Plan de levage signé","Poids et centre de gravité confirmés","Charge dans les limites de l'abaque de la grue","Vent et météo compatibles","Signaleur et communication en place","Zone sous charge balisée","Élingues et accessoires contrôlés"]},
+eau:{n:"Travaux sur l'eau",c:["Gilet de sauvetage pour chaque intervenant","Bouée et embarcation de sauvetage prêtes","Binôme constitué, jamais de travail isolé","Niveau d'eau et prévisions vérifiés","Communication radio testée","Plan de sauvetage connu de l'équipe"]},
+elec:{n:"Consignation électrique",c:["Circuit identifié sur le schéma","Coupure et séparation réalisées","Cadenassage et étiquetage en place","Vérification d'absence de tension effectuée","Mise à la terre et en court-circuit si requis","Affichage au point de consignation","Personnel habilité désigné"]}
+};
+
+var TALKS=[
+{t:"Travail en hauteur",p:["S'accrocher avant de s'avancer : l'ancrage d'abord.","Contrôler son harnais et ses longes à chaque prise de poste.","Attacher ses outils, ne rien lancer.","Ne jamais retirer seul un garde-corps."]},
+{t:"Levage et charges suspendues",p:["Personne sous la charge, jamais.","Un seul signaleur par levage.","Arrêt du levage au seuil de vent fixé.","Vérifier élingues et accessoires avant l'accrochage."]},
+{t:"Eau et noyade",p:["Gilet porté dès l'approche de l'eau.","Jamais seul au bord ou sur l'eau.","Repérer la bouée la plus proche.","Contrôler le niveau d'eau avant le poste."]},
+{t:"Fouilles et terrassement",p:["Pas d'entrée sans blindage ou talus conforme.","Déblais loin du bord.","Inspection avant le poste et après la pluie.","Repérer sa sortie de secours en entrant."]},
+{t:"Chaleur et hydratation",p:["Boire avant d'avoir soif, par petites quantités.","Pauses à l'ombre pendant les heures chaudes.","Signes d'alerte : crampes, vertiges, confusion, peau chaude.","Se surveiller entre collègues, alerter sans attendre."]},
+{t:"Engins et piétons",p:["Angle mort : si je ne vois pas le conducteur, il ne me voit pas.","Contact visuel avant de croiser un engin.","Gilet haute visibilité en permanence.","Pas d'écouteurs ni de téléphone en zone d'engins."]},
+{t:"Électricité",p:["Câble abîmé : on le retire, on le signale.","Différentiel testé avant l'usage.","Consignation avec son propre cadenas.","Distance de sécurité aux lignes aériennes."]},
+{t:"Béton et coffrage",p:["Protéger la peau du béton frais, rincer vite.","Étais contrôlés avant le coulage.","Zone de la pompe interdite au public.","Décoffrage seulement sur ordre écrit."]},
+{t:"Presque-accidents",p:["Déclarer un presque-accident, c'est éviter l'accident suivant.","Aucune sanction pour une déclaration de bonne foi.","Donner un exemple vécu sur le chantier.","Annoncer l'action corrective prise."]},
+{t:"Équipements de protection",p:["Casque, chaussures, lunettes, gants : adaptés à la tâche.","Remplacer tout EPI endommagé.","Porter l'EPI correctement, pas seulement l'avoir sur soi.","Chacun veille aussi sur celui de son voisin."]},
+{t:"Environnement du chantier",p:["Déchets triés et déposés au bon endroit.","Fuite d'huile ou de carburant : stopper, contenir, alerter.","Aucun rejet direct dans l'eau.","Bacs de rétention toujours en place."]},
+{t:"Alerte et premiers secours",p:["Alerter avec le lieu précis, la nature de l'accident, le nombre de victimes.","Sécuriser avant de secourir, ne pas ajouter une victime.","Connaître le point de rassemblement.","Savoir qui sont les secouristes du chantier."]}
+];
+
+var EMERG=[
+{t:"Chute avec suspension au harnais",s:["Alerter immédiatement et activer le plan de sauvetage en hauteur.","Récupérer la personne le plus vite possible : une personne inconsciente suspendue est en danger vital.","Une fois au sol, appeler les secours médicaux et ne pas la laisser seule."]},
+{t:"Noyade ou chute à l'eau",s:["Lancer une bouée, appeler à l'aide, envoyer l'embarcation de sauvetage.","Ne pas se jeter à l'eau sans moyen de flottaison et sans relais.","Une fois la personne sortie, vérifier la respiration et alerter les secours."]},
+{t:"Accident de levage ou chute de charge",s:["Arrêter la grue et tous les mouvements.","Évacuer la zone, ne pas toucher à une charge instable.","Alerter le responsable, sécuriser, secourir les victimes en sécurité."]},
+{t:"Électrisation",s:["Couper l'alimentation à la source avant tout contact.","Ne jamais toucher une victime encore en contact avec le courant.","Alerter les secours, vérifier la respiration, commencer les gestes de secours."]},
+{t:"Éboulement de fouille",s:["Évacuer la zone et interdire l'accès.","Ne pas entrer dans la fouille sans blindage ni secours spécialisés.","Garder les engins éloignés du bord et alerter immédiatement."]},
+{t:"Espace confiné",s:["Ne jamais entrer pour secourir sans appareil respiratoire.","Déclencher le sauvetage depuis l'extérieur avec le trépied ou le treuil.","Alerter les secours en précisant le gaz suspecté."]},
+{t:"Incendie",s:["Donner l'alarme et évacuer vers le point de rassemblement.","Utiliser un extincteur seulement si le feu est naissant et la sortie derrière vous.","Couper gaz et électricité si possible sans danger, accueillir les pompiers."]}
+];
+
+var TABS=[["tableau","Tableau de bord"],["risques","Risques"],["inspections","Inspections"],["permis","Permis"],["causeries","Causeries"],["indicateurs","Indicateurs"],["urgence","Urgences"],["export","Exports"]];
+var GL=["","Mineure","Légère","Sérieuse","Grave","Catastrophique"], PL=["","Rare","Peu probable","Possible","Probable","Fréquent"];
+var LVN=["","Faible","Modéré","Élevé","Critique"];
+var ST={todo:"À traiter",wip:"En cours",ok:"Maîtrisé"};
+var LOGT=["Presque-accident","Premiers soins","Soins médicaux","Arrêt de travail","Dégât matériel","Événement environnemental"];
+var CONTACTS=[["pomp","Pompiers"],["samu","Ambulance / SAMU"],["pol","Police"],["hop","Hôpital le plus proche"],["resp","Responsable de chantier"],["hse","Responsable HSE"],["moa","Maître d'ouvrage / contrôle"],["rass","Point de rassemblement"],["gps","Coordonnées GPS du chantier"]];
+
+/* ---------- État ---------- */
+var KEY="carnet-hse-pont-v1";
+var S={meta:{site:"",ouvrage:"",hse:"",resp:""},chk:{},note:{},chkCur:"fond",risks:{},custom:[],matView:"res",matFilter:null,permit:{type:"hauteur",f:{},checks:{}},talk:{topic:-1,names:""},kpi:{h:"",lti:"",lost:"",rec:"",nm:""},log:[],contacts:{}};
+function load(){try{var r=localStorage.getItem(KEY);if(r){var o=JSON.parse(r);for(var k in o){S[k]=o[k]}}}catch(e){}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function setPath(path,v){var a=path.split("."),o=S;for(var i=0;i<a.length-1;i++){if(typeof o[a[i]]!=="object"||o[a[i]]===null)o[a[i]]={};o=o[a[i]]}o[a[a.length-1]]=v}
+
+/* ---------- Calculs ---------- */
+function lvl(s){return s<=4?1:s<=9?2:s<=14?3:4}
+function allRisks(){return RISKS.concat(S.custom)}
+function getR(r){var o=S.risks[r.id]||{};return {g:o.g||r.g,p:o.p||r.p,g2:o.g2||r.g2,p2:o.p2||r.p2,st:o.st||"todo"}}
+function cstat(c){var n=c.items.length,ans=0,nc=0;for(var i=0;i<n;i++){var s=S.chk[c.id+"-"+i];if(s)ans++;if(s==="nc")nc++}return {n:n,ans:ans,nc:nc}}
+function chkTotals(){var n=0,ans=0,nc=0,list=[];CHK.forEach(function(c){var s=cstat(c);n+=s.n;ans+=s.ans;nc+=s.nc;c.items.forEach(function(t,i){var k=c.id+"-"+i;if(S.chk[k]==="nc")list.push({c:c.name,t:t,k:k})})});return {n:n,ans:ans,nc:nc,list:list}}
+function openRisks(){return allRisks().map(function(r){var v=getR(r);return {r:r,v:v,s:v.g2*v.p2}}).filter(function(x){return lvl(x.s)>=3&&x.v.st!=="ok"}).sort(function(a,b){return b.s-a.s})}
+function kpiCalc(){var h=parseFloat(S.kpi.h)||0,lti=parseFloat(S.kpi.lti)||0,lost=parseFloat(S.kpi.lost)||0,rec=parseFloat(S.kpi.rec)||0;if(h<=0)return null;return {tf:lti*1e6/h,tg:lost*1000/h,trir:rec*200000/h}}
+function todayStr(){return new Date().toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"})}
+function isoToday(){var d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0")}
+function dayIdx(){var d=new Date(),s=new Date(d.getFullYear(),0,0);return Math.floor((d-s)/86400000)%TALKS.length}
+function topicIdx(){return S.talk.topic>=0?S.talk.topic:dayIdx()}
+
+/* ---------- Rapports copiables ---------- */
+function dayReport(){
+  var t=chkTotals(),o=openRisks(),k=kpiCalc(),L=[];
+  L.push("RAPPORT HSE · "+(S.meta.site||"Chantier")+(S.meta.ouvrage?" · "+S.meta.ouvrage:""));
+  L.push("Date : "+todayStr());
+  if(S.meta.hse)L.push("Responsable HSE : "+S.meta.hse);
+  L.push("");
+  L.push("Inspections : "+t.ans+" points renseignés sur "+t.n+", "+t.nc+" non conformité(s).");
+  if(t.list.length){L.push("Non-conformités :");t.list.forEach(function(x){L.push("- ["+x.c+"] "+x.t+(S.note[x.k]?" → "+S.note[x.k]:""))})}
+  L.push("");
+  L.push("Risques résiduels élevés ou critiques non maîtrisés : "+o.length);
+  o.forEach(function(x){L.push("- "+x.r.t+" (résiduel "+x.s+", "+LVN[lvl(x.s)]+", "+ST[x.v.st]+")")});
+  if(k){L.push("");L.push("Indicateurs : TF "+fmt(k.tf)+" · TG "+fmt(k.tg)+" · TRIR "+fmt(k.trir))}
+  return L.join("\n");
+}
+function permitText(){
+  var P=PERMITS[S.permit.type],f=S.permit.f||{},L=[];
+  L.push("PERMIS DE TRAVAIL · "+P.n.toUpperCase());
+  L.push("Chantier : "+(S.meta.site||"—")+(S.meta.ouvrage?" · "+S.meta.ouvrage:""));
+  L.push("Lieu : "+(f.lieu||"—"));
+  L.push("Travaux : "+(f.travaux||"—"));
+  L.push("Demandeur : "+(f.dem||"—"));
+  L.push("Intervenants : "+(f.inter||"—"));
+  L.push("Début : "+(f.debut||"—")+" · Durée : "+(f.duree||"—")+" h (valable pour ce seul poste)");
+  L.push("");
+  P.c.forEach(function(c,i){L.push((S.permit.checks[S.permit.type+"-"+i]?"[x] ":"[ ] ")+c)});
+  L.push("");L.push("Signature demandeur : ________  Signature HSE : ________");
+  return L.join("\n");
+}
+function talkText(){
+  var T=TALKS[topicIdx()],L=["CAUSERIE SÉCURITÉ · "+T.t,"Date : "+todayStr(),"Animateur : "+(S.meta.hse||"—"),"Points abordés :"];
+  T.p.forEach(function(x){L.push("- "+x)});
+  L.push("","Participants :",S.talk.names||"—");
+  return L.join("\n");
+}
+
+/* ---------- Vues ---------- */
+function sel(path,opts,val,id,num){
+  return '<select id="'+id+'" data-bind="'+path+'"'+(num?' data-num="1"':'')+'>'+opts.map(function(o){return '<option value="'+o[0]+'"'+(String(o[0])===String(val)?' selected':'')+'>'+esc(o[1])+'</option>'}).join("")+'</select>';
+}
+function copyCard(id,title){return '<div class="row"><button class="btn" data-act="copy" data-src="'+id+'">'+title+'</button></div><div id="fb-'+id+'"></div>'}
+
+function vTableau(){
+  var t=chkTotals(),o=openRisks(),k=kpiCalc(),pct=t.n?Math.round(t.ans*100/t.n):0;
+  var crit=o.filter(function(x){return lvl(x.s)===4}).length;
+  var T=TALKS[dayIdx()];
+  var nc=t.list.slice(0,6).map(function(x){return '<li class="it s-nc"><p><span class="tag">'+esc(x.c)+'</span><br>'+esc(x.t)+'</p>'+(S.note[x.k]?'<p class="mono">→ '+esc(S.note[x.k])+'</p>':'')+'</li>'}).join("");
+  var rk=o.slice(0,6).map(function(x){return '<li class="it"><p><strong>'+esc(x.r.t)+'</strong></p><p class="row"><span class="pill l'+lvl(x.s)+'">'+LVN[lvl(x.s)]+' · '+x.s+'</span><span class="tag">'+ST[x.v.st]+'</span></p></li>'}).join("");
+  return ''
+  +'<section class="card"><h2>Chantier</h2><div class="grid2">'
+  +'<div class="field"><label for="m-site">Nom du chantier</label><input type="text" id="m-site" data-bind="meta.site" value="'+esc(S.meta.site)+'" placeholder="Ex. Pont sur le fleuve"></div>'
+  +'<div class="field"><label for="m-ouv">Ouvrage</label><input type="text" id="m-ouv" data-bind="meta.ouvrage" value="'+esc(S.meta.ouvrage)+'" placeholder="Ex. Pont à poutres, 3 travées"></div>'
+  +'<div class="field"><label for="m-hse">Responsable HSE</label><input type="text" id="m-hse" data-bind="meta.hse" value="'+esc(S.meta.hse)+'"></div>'
+  +'<div class="field"><label for="m-resp">Chef de chantier</label><input type="text" id="m-resp" data-bind="meta.resp" value="'+esc(S.meta.resp)+'"></div>'
+  +'</div></section>'
+  +'<section class="tiles">'
+  +'<div class="tile '+(pct>=100?'ok':'')+'"><span class="k">Inspections renseignées</span><span class="v">'+pct+'%</span><span class="n">'+t.ans+' points sur '+t.n+'</span></div>'
+  +'<div class="tile '+(t.nc?'crit':'ok')+'"><span class="k">Non-conformités</span><span class="v">'+t.nc+'</span><span class="n">à corriger</span></div>'
+  +'<div class="tile '+(crit?'crit':(o.length?'warn':'ok'))+'"><span class="k">Risques résiduels élevés</span><span class="v">'+o.length+'</span><span class="n">dont '+crit+' critique(s)</span></div>'
+  +'<div class="tile"><span class="k">Taux de fréquence</span><span class="v">'+(k?fmt(k.tf,1):'—')+'</span><span class="n">'+(k?'accidents avec arrêt / million d\'h':'saisir les heures travaillées')+'</span></div>'
+  +'</section>'
+  +'<section class="card"><h3>Causerie du jour</h3><p><strong>'+esc(T.t)+'</strong></p><div class="row" style="margin-top:10px"><button class="btn sm" data-act="tab" data-k="causeries">Ouvrir la causerie</button></div></section>'
+  +'<section class="card"><h3>Non-conformités ouvertes</h3>'+(nc?'<ul class="list">'+nc+'</ul>':'<p class="lead">Aucune non-conformité saisie. Passez par l\'onglet Inspections pour renseigner les points du jour.</p>')+(t.list.length>6?'<p class="lead" style="margin-top:8px">+ '+(t.list.length-6)+' autre(s) dans le rapport.</p>':'')+'</section>'
+  +'<section class="card"><h3>Risques à surveiller</h3>'+(rk?'<ul class="list">'+rk+'</ul>':'<p class="lead">Tous les risques élevés sont marqués comme maîtrisés, ou le registre est vide.</p>')+'</section>'
+  +'<section class="card"><h3>Rapport du jour</h3><p class="lead" style="margin-bottom:10px">Texte prêt à coller dans un message ou un compte rendu.</p><div class="out" id="rep">'+esc(dayReport())+'</div><div style="margin-top:10px">'+copyCard("rep","Copier le rapport")+'</div></section>';
+}
+
+function vMatrix(){
+  var v=S.matView,cnt={};
+  allRisks().forEach(function(r){var x=getR(r),g=v==="init"?x.g:x.g2,p=v==="init"?x.p:x.p2,k=g+"-"+p;cnt[k]=(cnt[k]||0)+1});
+  var h='<div class="mat"><div class="ax"></div>';
+  for(var p=1;p<=5;p++)h+='<div class="ax">P'+p+'</div>';
+  for(var g=5;g>=1;g--){
+    h+='<div class="ax">G'+g+'</div>';
+    for(p=1;p<=5;p++){var k2=g+"-"+p,s=g*p,f=S.matFilter&&S.matFilter[0]===g&&S.matFilter[1]===p;
+      h+='<button class="c l'+lvl(s)+(f?' sel':'')+'" data-act="mat" data-g="'+g+'" data-p="'+p+'" aria-label="Gravité '+g+', probabilité '+p+', '+(cnt[k2]||0)+' risque(s)">'+(cnt[k2]||"")+'</button>';}
+  }
+  return h+'</div><p class="axlbl">G = gravité, P = probabilité. Touchez une case pour filtrer la liste.</p>';
+}
+
+function vRisques(){
+  var v=S.matView,f=S.matFilter;
+  var list=allRisks().map(function(r){var x=getR(r);return {r:r,x:x,si:x.g*x.p,sr:x.g2*x.p2}}).filter(function(o){
+    if(!f)return true;return v==="init"?(o.x.g===f[0]&&o.x.p===f[1]):(o.x.g2===f[0]&&o.x.p2===f[1])
+  }).sort(function(a,b){return v==="init"?b.si-a.si:b.sr-a.sr});
+  var gOpts=[1,2,3,4,5].map(function(i){return [i,i+" · "+GL[i]]}),pOpts=[1,2,3,4,5].map(function(i){return [i,i+" · "+PL[i]]});
+  var stOpts=Object.keys(ST).map(function(k){return [k,ST[k]]});
+  var cards=list.map(function(o){
+    var r=o.r,x=o.x,id=r.id;
+    return '<details class="rk"><summary><span class="rk-t">'+esc(r.t)+'</span><span class="rk-m"><span>'+esc(r.ph)+'</span><span class="pill l'+lvl(o.si)+'">Initial '+o.si+'</span><span>→</span><span class="pill l'+lvl(o.sr)+'">Résiduel '+o.sr+'</span><span>'+ST[x.st]+'</span></span></summary>'
+    +'<div class="rk-b">'
+    +(r.ctl&&r.ctl.length?'<div><p class="lbl">Mesures de maîtrise</p><ul class="ctl">'+r.ctl.map(function(c){return '<li>'+esc(c)+'</li>'}).join("")+'</ul></div>':'')
+    +'<div class="grid2">'
+    +'<div class="field"><label for="g-'+id+'">Gravité initiale</label>'+sel("risks."+id+".g",gOpts,x.g,"g-"+id,1)+'</div>'
+    +'<div class="field"><label for="p-'+id+'">Probabilité initiale</label>'+sel("risks."+id+".p",pOpts,x.p,"p-"+id,1)+'</div>'
+    +'<div class="field"><label for="g2-'+id+'">Gravité résiduelle</label>'+sel("risks."+id+".g2",gOpts,x.g2,"g2-"+id,1)+'</div>'
+    +'<div class="field"><label for="p2-'+id+'">Probabilité résiduelle</label>'+sel("risks."+id+".p2",pOpts,x.p2,"p2-"+id,1)+'</div>'
+    +'<div class="field"><label for="st-'+id+'">Statut</label>'+sel("risks."+id+".st",stOpts,x.st,"st-"+id)+'</div>'
+    +'</div>'
+    +(id.charAt(0)==="c"?'<div><button class="btn ghost sm" data-act="delrisk" data-id="'+id+'">Supprimer ce risque</button></div>':'')
+    +'</div></details>';
+  }).join("");
+  return '<section class="card"><h2>Matrice des risques</h2><p class="lead" style="margin-bottom:12px">Score = gravité × probabilité. Faible jusqu\'à 4, modéré jusqu\'à 9, élevé jusqu\'à 14, critique au-delà.</p>'
+  +'<div class="chips" style="margin-bottom:12px"><button class="chip '+(v==="init"?'on':'')+'" data-act="matview" data-v="init">Avant mesures</button><button class="chip '+(v==="res"?'on':'')+'" data-act="matview" data-v="res">Après mesures</button>'+(f?'<button class="chip" data-act="matclr">Retirer le filtre</button>':'')+'</div>'
+  +vMatrix()+'</section>'
+  +'<section class="grid" style="display:grid;gap:10px"><h2>Registre ('+list.length+')</h2>'+(cards||'<p class="lead">Aucun risque dans cette case.</p>')+'</section>'
+  +'<section class="card"><h3>Ajouter un risque propre au site</h3><div class="field"><label for="newrisk">Description</label><input type="text" id="newrisk" placeholder="Ex. Travail de nuit sur le tablier"></div><div class="row" style="margin-top:10px"><button class="btn" data-act="addrisk">Ajouter au registre</button></div></section>';
+}
+
+function vInspections(){
+  var cur=CHK.find(function(c){return c.id===S.chkCur})||CHK[0],st=cstat(cur);
+  var chips=CHK.map(function(c){var s=cstat(c);return '<button class="chip '+(c.id===cur.id?'on':'')+'" data-act="chk" data-id="'+c.id+'">'+esc(c.name)+'<span class="chipn">'+s.ans+'/'+s.n+'</span></button>'}).join("");
+  var items=cur.items.map(function(t,i){
+    var k=cur.id+"-"+i,s=S.chk[k]||"";
+    function b(v,l){return '<button data-act="set" data-k="'+k+'" data-v="'+v+'" aria-pressed="'+(s===v)+'">'+l+'</button>'}
+    return '<li class="it s-'+(s||"none")+'"><p>'+esc(t)+'</p><div class="seg" role="group" aria-label="État du point">'+b("ok","Conforme")+b("nc","Non conforme")+b("na","N/A")+'</div>'
+    +(s==="nc"?'<div class="field"><label for="note-'+k+'">Action corrective</label><input type="text" id="note-'+k+'" data-bind="note.'+k+'" value="'+esc(S.note[k]||"")+'" placeholder="Qui, quoi, pour quand"></div>':'')+'</li>';
+  }).join("");
+  return '<section class="card"><h2>Inspections par activité</h2><p class="lead" style="margin-bottom:12px">Choisissez l\'activité en cours et renseignez chaque point avant le démarrage du poste.</p><div class="chips">'+chips+'</div></section>'
+  +'<section class="card"><h3>'+esc(cur.name)+'</h3><div class="bar" style="margin:6px 0 14px" aria-hidden="true"><i style="width:'+Math.round(st.ans*100/st.n)+'%"></i></div><p class="lead" style="margin-bottom:12px">'+st.ans+' point(s) renseigné(s) sur '+st.n+', '+st.nc+' non conforme(s).</p><ul class="list">'+items+'</ul>'
+  +'<div class="row" style="margin-top:14px"><button class="btn ghost sm" data-act="reset">Remettre cette liste à zéro</button></div></section>';
+}
+
+function permitStatus(){
+  var P=PERMITS[S.permit.type],n=P.c.length,ok=0;
+  P.c.forEach(function(c,i){if(S.permit.checks[S.permit.type+"-"+i])ok++});
+  var f=S.permit.f||{},miss=[];
+  if(!f.lieu)miss.push("lieu");if(!f.dem)miss.push("demandeur");if(!f.travaux)miss.push("travaux");
+  if(ok===n&&!miss.length)return '<div class="status go">Prêt à signer : '+n+' conditions sur '+n+' confirmées.</div>';
+  return '<div class="status stop">Ne pas démarrer : '+ok+' condition(s) sur '+n+' confirmée(s)'+(miss.length?', champs à compléter : '+miss.join(", "):'')+'.</div>';
+}
+function vPermis(){
+  var P=PERMITS[S.permit.type],f=S.permit.f||{};
+  var chips=Object.keys(PERMITS).map(function(k){return '<button class="chip '+(k===S.permit.type?'on':'')+'" data-act="ptype" data-k="'+k+'">'+esc(PERMITS[k].n)+'</button>'}).join("");
+  var checks=P.c.map(function(c,i){var k=S.permit.type+"-"+i;return '<label class="chk"><input type="checkbox" data-act="pchk" data-k="'+k+'"'+(S.permit.checks[k]?' checked':'')+'><span>'+esc(c)+'</span></label>'}).join("");
+  return '<section class="card"><h2>Permis de travail</h2><p class="lead" style="margin-bottom:12px">Aucune activité à risque ne démarre sans permis complété. Un permis vaut pour un poste et se renouvelle.</p><div class="chips">'+chips+'</div></section>'
+  +'<section class="card"><h3>'+esc(P.n)+'</h3><div class="grid2">'
+  +'<div class="field"><label for="pf-lieu">Lieu</label><input type="text" id="pf-lieu" data-bind="permit.f.lieu" value="'+esc(f.lieu||"")+'" placeholder="Ex. Pile P2, côté amont"></div>'
+  +'<div class="field"><label for="pf-dem">Demandeur</label><input type="text" id="pf-dem" data-bind="permit.f.dem" value="'+esc(f.dem||"")+'"></div>'
+  +'<div class="field"><label for="pf-inter">Intervenants</label><input type="text" id="pf-inter" data-bind="permit.f.inter" value="'+esc(f.inter||"")+'"></div>'
+  +'<div class="field"><label for="pf-debut">Heure de début</label><input type="time" id="pf-debut" data-bind="permit.f.debut" value="'+esc(f.debut||"")+'"></div>'
+  +'<div class="field"><label for="pf-duree">Durée (heures)</label><input type="number" inputmode="decimal" id="pf-duree" data-bind="permit.f.duree" value="'+esc(f.duree||"")+'" min="0" step="0.5"></div>'
+  +'</div><div class="field" style="margin-top:12px"><label for="pf-trav">Description des travaux</label><textarea id="pf-trav" data-bind="permit.f.travaux">'+esc(f.travaux||"")+'</textarea></div>'
+  +'<p class="lbl" style="margin:16px 0 8px">Conditions à confirmer sur le terrain</p><div style="display:grid;gap:8px">'+checks+'</div>'
+  +'<div id="pstat" style="margin-top:14px">'+permitStatus()+'</div>'
+  +'<div class="out" id="ptxt" style="margin-top:14px">'+esc(permitText())+'</div><div style="margin-top:10px">'+copyCard("ptxt","Copier le permis")+'</div></section>';
+}
+
+function vCauseries(){
+  var i=topicIdx(),T=TALKS[i];
+  var opts=TALKS.map(function(t,j){return [j,t.t]});
+  return '<section class="card"><h2>Causerie sécurité</h2><p class="lead" style="margin-bottom:12px">Cinq minutes avant la prise de poste, un sujet, des échanges. Le sujet du jour change automatiquement, vous pouvez en choisir un autre.</p>'
+  +'<div class="field"><label for="talkSel">Sujet</label>'+sel("talk.topic",opts,i,"talkSel",1)+'</div></section>'
+  +'<section class="card"><h3>'+esc(T.t)+'</h3><ul class="steps" style="margin-top:6px">'+T.p.map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ul>'
+  +'<p class="lead" style="margin-top:12px">Question à poser au groupe : qu\'est-ce qui pourrait mal tourner ici aujourd\'hui, et que faisons-nous pour l\'éviter ?</p></section>'
+  +'<section class="card"><h3>Participants</h3><div class="field"><label for="tnames">Un nom par ligne</label><textarea id="tnames" data-bind="talk.names" style="min-height:120px">'+esc(S.talk.names||"")+'</textarea></div>'
+  +'<div class="out" id="ttxt" style="margin-top:12px">'+esc(talkText())+'</div><div style="margin-top:10px">'+copyCard("ttxt","Copier le compte rendu")+'</div></section>';
+}
+
+function kpiHTML(){
+  var k=kpiCalc();
+  if(!k)return '<p class="lead">Saisissez les heures travaillées pour calculer les taux.</p>';
+  return '<div class="tiles"><div class="tile"><span class="k">TF</span><span class="v">'+fmt(k.tf,1)+'</span><span class="n">accidents avec arrêt par million d\'heures</span></div>'
+  +'<div class="tile"><span class="k">TG</span><span class="v">'+fmt(k.tg,2)+'</span><span class="n">jours perdus par millier d\'heures</span></div>'
+  +'<div class="tile"><span class="k">TRIR</span><span class="v">'+fmt(k.trir,2)+'</span><span class="n">cas enregistrables pour 200 000 heures</span></div></div>';
+}
+function vIndicateurs(){
+  var K=S.kpi,nm=parseFloat(K.nm)||0,lti=parseFloat(K.lti)||0,ratio=lti>0?fmt(nm/lti,1):(nm>0?"aucun accident avec arrêt":"—");
+  var log=S.log.map(function(e,i){return '<div><div><span class="tag">'+esc(e.d)+' · '+esc(e.t)+'</span><p>'+esc(e.x||"Sans description")+'</p></div><button class="btn ghost sm" data-act="dellog" data-i="'+i+'" aria-label="Supprimer cette entrée">Retirer</button></div>'}).join("");
+  return '<section class="card"><h2>Indicateurs de performance</h2><p class="lead" style="margin-bottom:12px">Saisissez les cumuls depuis le début du chantier ou du mois.</p><div class="grid2">'
+  +'<div class="field"><label for="k-h">Heures travaillées</label><input type="number" inputmode="numeric" id="k-h" data-bind="kpi.h" value="'+esc(K.h)+'" min="0"></div>'
+  +'<div class="field"><label for="k-lti">Accidents avec arrêt</label><input type="number" inputmode="numeric" id="k-lti" data-bind="kpi.lti" value="'+esc(K.lti)+'" min="0"></div>'
+  +'<div class="field"><label for="k-lost">Jours d\'arrêt perdus</label><input type="number" inputmode="numeric" id="k-lost" data-bind="kpi.lost" value="'+esc(K.lost)+'" min="0"></div>'
+  +'<div class="field"><label for="k-rec">Cas enregistrables</label><input type="number" inputmode="numeric" id="k-rec" data-bind="kpi.rec" value="'+esc(K.rec)+'" min="0"></div>'
+  +'<div class="field"><label for="k-nm">Presque-accidents déclarés</label><input type="number" inputmode="numeric" id="k-nm" data-bind="kpi.nm" value="'+esc(K.nm)+'" min="0"></div>'
+  +'</div><div class="row" style="margin-top:12px"><button class="btn ghost sm" data-act="fromlog">Compter depuis le registre ci-dessous</button></div>'
+  +'<div id="kpiOut" style="margin-top:16px">'+kpiHTML()+'</div>'
+  +'<p class="lead" style="margin-top:12px" id="kpiNm">Presque-accidents par accident avec arrêt : '+ratio+'.</p>'
+  +'<p class="lead" style="margin-top:8px">TF = accidents avec arrêt × 1 000 000 ÷ heures. TG = jours perdus × 1 000 ÷ heures. TRIR = cas enregistrables × 200 000 ÷ heures. Cas enregistrables : soins médicaux et arrêts de travail.</p></section>'
+  +'<section class="card"><h3>Registre des événements</h3><div class="grid2">'
+  +'<div class="field"><label for="l-d">Date</label><input type="date" id="l-d" value="'+isoToday()+'"></div>'
+  +'<div class="field"><label for="l-t">Type</label><select id="l-t">'+LOGT.map(function(t){return '<option>'+esc(t)+'</option>'}).join("")+'</select></div></div>'
+  +'<div class="field" style="margin-top:12px"><label for="l-x">Description</label><textarea id="l-x" placeholder="Où, quoi, causes apparentes, action immédiate"></textarea></div>'
+  +'<div class="row" style="margin:12px 0"><button class="btn" data-act="addlog">Ajouter au registre</button></div>'
+  +'<div class="log">'+(log||'<p class="lead">Aucun événement enregistré.</p>')+'</div></section>';
+}
+
+function vUrgence(){
+  var c=CONTACTS.map(function(x){return '<div class="field"><label for="c-'+x[0]+'">'+esc(x[1])+'</label><input type="text" id="c-'+x[0]+'" data-bind="contacts.'+x[0]+'" value="'+esc(S.contacts[x[0]]||"")+'"></div>'}).join("");
+  var acc=EMERG.map(function(e){return '<details class="acc"><summary>'+esc(e.t)+'</summary><div><ol class="steps">'+e.s.map(function(s){return '<li>'+esc(s)+'</li>'}).join("")+'</ol></div></details>'}).join("");
+  return '<section class="card"><h2>Plan d\'urgence</h2><div class="warnbox"><strong>Message d\'alerte :</strong> qui appelle, où exactement, ce qui s\'est passé, combien de victimes, état des victimes. Rester joignable.</div></section>'
+  +'<section class="card"><h3>Numéros et lieux à renseigner</h3><p class="lead" style="margin-bottom:12px">Remplissez ces champs avec les numéros locaux vérifiés, puis affichez-les à l\'entrée du chantier.</p><div class="grid2">'+c+'</div></section>'
+  +'<section style="display:grid;gap:8px"><h3 style="margin-bottom:4px">Conduite à tenir</h3>'+acc+'</section>';
+}
+
+/* ---------- Export : Excel (.xlsx), PDF (impression), sauvegarde ---------- */
+var CRCT=(function(){var t=[];for(var n=0;n<256;n++){var c=n;for(var k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function crc32(b){var c=0xFFFFFFFF;for(var i=0;i<b.length;i++)c=CRCT[(c^b[i])&255]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
+function zipStore(files,mime){
+  var enc=new TextEncoder(),parts=[],cen=[],off=0;
+  files.forEach(function(f){
+    var nm=enc.encode(f.name),data=enc.encode(f.text),crc=crc32(data),sz=data.length;
+    var lh=new DataView(new ArrayBuffer(30));
+    lh.setUint32(0,0x04034b50,true);lh.setUint16(4,20,true);lh.setUint16(6,0x0800,true);lh.setUint16(8,0,true);lh.setUint16(10,0,true);lh.setUint16(12,0x21,true);lh.setUint32(14,crc,true);lh.setUint32(18,sz,true);lh.setUint32(22,sz,true);lh.setUint16(26,nm.length,true);lh.setUint16(28,0,true);
+    parts.push(new Uint8Array(lh.buffer),nm,data);
+    var ch=new DataView(new ArrayBuffer(46));
+    ch.setUint32(0,0x02014b50,true);ch.setUint16(4,20,true);ch.setUint16(6,20,true);ch.setUint16(8,0x0800,true);ch.setUint16(10,0,true);ch.setUint16(12,0,true);ch.setUint16(14,0x21,true);ch.setUint32(16,crc,true);ch.setUint32(20,sz,true);ch.setUint32(24,sz,true);ch.setUint16(28,nm.length,true);ch.setUint32(42,off,true);
+    cen.push(new Uint8Array(ch.buffer),nm);
+    off+=30+nm.length+sz;
+  });
+  var cs=0;cen.forEach(function(p){cs+=p.length});
+  var e=new DataView(new ArrayBuffer(22));
+  e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,cs,true);e.setUint32(16,off,true);
+  return new Blob(parts.concat(cen,[new Uint8Array(e.buffer)]),{type:mime});
+}
+function xe(s){return String(s==null?"":s).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g,"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;")}
+function colN(i){var s="";i++;while(i>0){var m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26)}return s}
+function cellXml(c,r,i){
+  if(c==null||c==="")return "";
+  var o=(typeof c==="object")?c:{v:c},ref=colN(i)+(r+1),s=o.s?' s="'+o.s+'"':'';
+  if(typeof o.v==="number"&&isFinite(o.v))return '<c r="'+ref+'"'+s+'><v>'+o.v+'</v></c>';
+  return '<c r="'+ref+'"'+s+' t="inlineStr"><is><t xml:space="preserve">'+xe(o.v)+'</t></is></c>';
+}
+function sheetXml(sh){
+  var cols='<cols>'+sh.w.map(function(w,i){return '<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+w+'" customWidth="1"/>'}).join("")+'</cols>';
+  var view=sh.hdr?'<sheetViews><sheetView workbookViewId="0"><pane ySplit="'+sh.hdr+'" topLeftCell="A'+(sh.hdr+1)+'" activePane="bottomLeft" state="frozen"/></sheetView></sheetViews>':'<sheetViews><sheetView workbookViewId="0"/></sheetViews>';
+  var rows=sh.rows.map(function(r,ri){return '<row r="'+(ri+1)+'">'+r.map(function(c,ci){return cellXml(c,ri,ci)}).join("")+'</row>'}).join("");
+  var af=(sh.hdr&&sh.rows.length>sh.hdr)?'<autoFilter ref="A'+sh.hdr+':'+colN(sh.w.length-1)+sh.rows.length+'"/>':'';
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+view+'<sheetFormatPr defaultRowHeight="15"/>'+cols+'<sheetData>'+rows+'</sheetData>'+af+'</worksheet>';
+}
+function stylesXml(){
+  var fills=["FF10171A","FFCFE8D8","FFF3E2AE","FFF7CFAD","FFF5C0BA"];
+  var bd='<border><left style="thin"><color rgb="FFC9CEC8"/></left><right style="thin"><color rgb="FFC9CEC8"/></right><top style="thin"><color rgb="FFC9CEC8"/></top><bottom style="thin"><color rgb="FFC9CEC8"/></bottom><diagonal/></border>';
+  function xf(font,fill,border,num,al){return '<xf numFmtId="'+num+'" fontId="'+font+'" fillId="'+fill+'" borderId="'+border+'" xfId="0" applyFont="1" applyFill="1" applyBorder="1" applyNumberFormat="1" applyAlignment="1"><alignment vertical="'+al+'" wrapText="1"/></xf>'}
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+  +'<fonts count="4"><font><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/></font><font><b/><sz val="11"/><name val="Calibri"/></font><font><b/><sz val="16"/><name val="Calibri"/></font></fonts>'
+  +'<fills count="7"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill>'+fills.map(function(c){return '<fill><patternFill patternType="solid"><fgColor rgb="'+c+'"/><bgColor indexed="64"/></patternFill></fill>'}).join("")+'</fills>'
+  +'<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>'+bd+'</borders>'
+  +'<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'
+  +'<cellXfs count="10">'
+  +xf(0,0,0,0,"top")      /* 0 défaut */
+  +xf(1,2,1,0,"center")   /* 1 en-tête */
+  +xf(0,0,1,0,"top")      /* 2 texte */
+  +xf(3,0,0,0,"center")   /* 3 titre */
+  +xf(0,3,1,0,"top")      /* 4 faible / conforme */
+  +xf(0,4,1,0,"top")      /* 5 modéré */
+  +xf(0,5,1,0,"top")      /* 6 élevé */
+  +xf(0,6,1,0,"top")      /* 7 critique / non conforme */
+  +xf(2,0,1,0,"top")      /* 8 libellé gras */
+  +xf(0,0,1,2,"top")      /* 9 nombre 0,00 */
+  +'</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+}
+function xlsxSheets(){
+  var t=chkTotals(),o=openRisks(),k=kpiCalc(),m=S.meta,P=PERMITS[S.permit.type],f=S.permit.f||{},T=TALKS[topicIdx()],K=S.kpi;
+  var H=function(a){return a.map(function(x){return {v:x,s:1}})};
+  var W=function(v,s){return {v:v,s:s||2}};
+  var B=function(v){return {v:v,s:8}};
+  var SM={ok:["Conforme",4],nc:["Non conforme",7],na:["N/A",2]};
+  var r2=function(x){return Math.round(x*100)/100};
+  var out=[];
+
+  var syn=[[{v:"Carnet HSE Pont · Rapport",s:3}],[],
+    [B("Chantier"),W(m.site||"—")],[B("Ouvrage"),W(m.ouvrage||"—")],[B("Responsable HSE"),W(m.hse||"—")],[B("Chef de chantier"),W(m.resp||"—")],[B("Date du rapport"),W(todayStr())],[],
+    [B("Points d'inspection renseignés"),W(t.ans+" sur "+t.n)],
+    [B("Non-conformités"),{v:t.nc,s:t.nc?7:4}],
+    [B("Risques résiduels élevés ou critiques non maîtrisés"),{v:o.length,s:o.length?6:4}]];
+  if(k){syn.push([B("Taux de fréquence (TF)"),{v:r2(k.tf),s:9}],[B("Taux de gravité (TG)"),{v:r2(k.tg),s:9}],[B("TRIR"),{v:r2(k.trir),s:9}])}
+  out.push({name:"Synthèse",rows:syn,w:[48,50]});
+
+  var ir=[H(["Activité","Point de contrôle","État","Action corrective"])],nr=[H(["Activité","Point de contrôle","Action corrective"])];
+  CHK.forEach(function(c){c.items.forEach(function(tx,i){
+    var key=c.id+"-"+i,s=S.chk[key],sm=SM[s]||["Non renseigné",2];
+    ir.push([W(c.name),W(tx),{v:sm[0],s:sm[1]},W(S.note[key]||"")]);
+    if(s==="nc")nr.push([W(c.name),W(tx),W(S.note[key]||"")]);
+  })});
+  if(nr.length===1)nr.push([W("Aucune non-conformité"),W(""),W("")]);
+  out.push({name:"Inspections",rows:ir,w:[30,70,16,40],hdr:1});
+  out.push({name:"Non-conformités",rows:nr,w:[30,70,45],hdr:1});
+
+  var rr=[H(["Phase","Risque","Gravité initiale","Probabilité initiale","Score initial","Niveau initial","Gravité résiduelle","Probabilité résiduelle","Score résiduel","Niveau résiduel","Statut","Mesures de maîtrise"])];
+  allRisks().map(function(r){return {r:r,v:getR(r)}}).sort(function(a,b){return b.v.g2*b.v.p2-a.v.g2*a.v.p2}).forEach(function(x){
+    var si=x.v.g*x.v.p,sr=x.v.g2*x.v.p2;
+    rr.push([W(x.r.ph),W(x.r.t),W(x.v.g),W(x.v.p),W(si),{v:LVN[lvl(si)],s:3+lvl(si)},W(x.v.g2),W(x.v.p2),W(sr),{v:LVN[lvl(sr)],s:3+lvl(sr)},W(ST[x.v.st]),W((x.r.ctl||[]).join("\n"))]);
+  });
+  out.push({name:"Risques",rows:rr,w:[15,48,11,13,10,12,12,14,10,12,12,70],hdr:1});
+
+  var pr=[[{v:"Permis de travail · "+P.n,s:3}],[],[B("Chantier"),W(m.site||"—")],[B("Lieu"),W(f.lieu||"—")],[B("Travaux"),W(f.travaux||"—")],[B("Demandeur"),W(f.dem||"—")],[B("Intervenants"),W(f.inter||"—")],[B("Heure de début"),W(f.debut||"—")],[B("Durée (heures)"),W(f.duree||"—")],[],H(["Condition","Confirmée"])];
+  P.c.forEach(function(c,i){var ok=S.permit.checks[S.permit.type+"-"+i];pr.push([W(c),{v:ok?"Oui":"Non",s:ok?4:7}])});
+  out.push({name:"Permis",rows:pr,w:[60,40]});
+
+  var er=[H(["Date","Type","Description"])];
+  S.log.forEach(function(e){er.push([W(e.d),W(e.t),W(e.x||"")])});
+  if(er.length===1)er.push([W("—"),W("Aucun événement enregistré"),W("")]);
+  out.push({name:"Événements",rows:er,w:[14,28,80],hdr:1});
+
+  var n=function(x){return parseFloat(x)||0};
+  var kr=[H(["Indicateur","Valeur","Définition"]),
+    [B("Heures travaillées"),W(n(K.h)),W("Cumul saisi")],
+    [B("Accidents avec arrêt"),W(n(K.lti)),W("Cumul saisi")],
+    [B("Jours d'arrêt perdus"),W(n(K.lost)),W("Cumul saisi")],
+    [B("Cas enregistrables"),W(n(K.rec)),W("Soins médicaux et arrêts de travail")],
+    [B("Presque-accidents déclarés"),W(n(K.nm)),W("Cumul saisi")],
+    [B("TF"),k?{v:r2(k.tf),s:9}:W("—"),W("Accidents avec arrêt × 1 000 000 ÷ heures")],
+    [B("TG"),k?{v:r2(k.tg),s:9}:W("—"),W("Jours perdus × 1 000 ÷ heures")],
+    [B("TRIR"),k?{v:r2(k.trir),s:9}:W("—"),W("Cas enregistrables × 200 000 ÷ heures")]];
+  out.push({name:"Indicateurs",rows:kr,w:[30,16,50],hdr:1});
+
+  var cr=[[{v:"Causerie sécurité · "+T.t,s:3}],[],[B("Date"),W(todayStr())],[B("Animateur"),W(m.hse||"—")],[],H(["Points abordés"])];
+  T.p.forEach(function(x){cr.push([W(x)])});
+  cr.push([],H(["Participants"]));
+  var names=(S.talk.names||"").split(/\r?\n/).map(function(x){return x.trim()}).filter(Boolean);
+  if(!names.length)names=["—"];
+  names.forEach(function(x){cr.push([W(x)])});
+  out.push({name:"Causerie",rows:cr,w:[90,40]});
+
+  var cc=[H(["Rôle","Contact ou lieu"])];
+  CONTACTS.forEach(function(c){cc.push([B(c[1]),W(S.contacts[c[0]]||"")])});
+  out.push({name:"Contacts",rows:cc,w:[34,60],hdr:1});
+  return out;
+}
+function buildXlsx(){
+  var sh=xlsxSheets(),hd='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n',RT="http://schemas.openxmlformats.org/officeDocument/2006/relationships",PK="http://schemas.openxmlformats.org/package/2006/relationships";
+  var ct=hd+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'
+    +sh.map(function(_,i){return '<Override PartName="/xl/worksheets/sheet'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'}).join("")+'</Types>';
+  var rels=hd+'<Relationships xmlns="'+PK+'"><Relationship Id="rId1" Type="'+RT+'/officeDocument" Target="xl/workbook.xml"/></Relationships>';
+  var wb=hd+'<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="'+RT+'"><bookViews><workbookView/></bookViews><sheets>'
+    +sh.map(function(s,i){return '<sheet name="'+xe(s.name)+'" sheetId="'+(i+1)+'" r:id="rId'+(i+1)+'"/>'}).join("")+'</sheets></workbook>';
+  var wr=hd+'<Relationships xmlns="'+PK+'">'+sh.map(function(_,i){return '<Relationship Id="rId'+(i+1)+'" Type="'+RT+'/worksheet" Target="worksheets/sheet'+(i+1)+'.xml"/>'}).join("")
+    +'<Relationship Id="rId'+(sh.length+1)+'" Type="'+RT+'/styles" Target="styles.xml"/></Relationships>';
+  var files=[{name:"[Content_Types].xml",text:ct},{name:"_rels/.rels",text:rels},{name:"xl/workbook.xml",text:wb},{name:"xl/_rels/workbook.xml.rels",text:wr},{name:"xl/styles.xml",text:stylesXml()}];
+  sh.forEach(function(s,i){files.push({name:"xl/worksheets/sheet"+(i+1)+".xml",text:sheetXml(s)})});
+  return zipStore(files,"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+}
+
+/* ---------- Rapport PDF (via impression) ---------- */
+function tbl(head,rows){
+  return '<table><thead><tr>'+head.map(function(x){return '<th>'+esc(x)+'</th>'}).join("")+'</tr></thead><tbody>'
+  +rows.map(function(r){return '<tr>'+r.map(function(c){var o=(c&&typeof c==="object")?c:{t:c};return '<td'+(o.c?' class="'+o.c+'"':'')+'>'+esc(o.t).replace(/\n/g,"<br>")+'</td>'}).join("")+'</tr>'}).join("")+'</tbody></table>';
+}
+function buildPrint(){
+  var t=chkTotals(),o=openRisks(),k=kpiCalc(),m=S.meta,T=TALKS[topicIdx()],P=PERMITS[S.permit.type],f=S.permit.f||{},K=S.kpi;
+  var SM={ok:["Conforme","pl1"],nc:["Non conforme","pl4"],na:["N/A",""]};
+  var h='<h1>Rapport HSE</h1><p class="pm">'+esc([m.site,m.ouvrage].filter(Boolean).join(" · ")||"Chantier")+' — '+esc(todayStr())+'</p>';
+  h+=tbl(["Chantier","Ouvrage","Responsable HSE","Chef de chantier"],[[m.site||"—",m.ouvrage||"—",m.hse||"—",m.resp||"—"]]);
+  h+='<h2>Synthèse</h2>'+tbl(["Points renseignés","Non-conformités","Risques élevés non maîtrisés","TF","TG","TRIR"],[[t.ans+" / "+t.n,{t:t.nc,c:t.nc?"pl4":"pl1"},{t:o.length,c:o.length?"pl3":"pl1"},k?fmt(k.tf,1):"—",k?fmt(k.tg,2):"—",k?fmt(k.trir,2):"—"]]);
+  h+='<h2>Non-conformités à corriger</h2>'+(t.list.length?tbl(["Activité","Point de contrôle","Action corrective"],t.list.map(function(x){return [x.c,x.t,S.note[x.k]||"—"]})):'<p>Aucune non-conformité saisie.</p>');
+  var rk=allRisks().map(function(r){return {r:r,v:getR(r)}}).sort(function(a,b){return b.v.g2*b.v.p2-a.v.g2*a.v.p2}).map(function(x){
+    var si=x.v.g*x.v.p,sr=x.v.g2*x.v.p2;
+    return [x.r.t,x.r.ph,{t:LVN[lvl(si)]+" · "+si,c:"pl"+lvl(si)},{t:LVN[lvl(sr)]+" · "+sr,c:"pl"+lvl(sr)},ST[x.v.st]];
+  });
+  h+='<h2>Registre des risques</h2>'+tbl(["Risque","Phase","Initial","Résiduel","Statut"],rk);
+  h+='<h2>Inspections par activité</h2>';
+  CHK.forEach(function(c){
+    var s=cstat(c);
+    h+='<h3>'+esc(c.name)+' <span class="pm">('+s.ans+' / '+s.n+' renseignés, '+s.nc+' non conforme(s))</span></h3>'
+    +tbl(["Point de contrôle","État","Action corrective"],c.items.map(function(tx,i){var key=c.id+"-"+i,sm=SM[S.chk[key]]||["Non renseigné",""];return [tx,{t:sm[0],c:sm[1]},S.note[key]||""]}));
+  });
+  h+='<h2>Permis en cours : '+esc(P.n)+'</h2>'
+  +tbl(["Lieu","Demandeur","Intervenants","Début","Durée (h)"],[[f.lieu||"—",f.dem||"—",f.inter||"—",f.debut||"—",f.duree||"—"]])
+  +'<p class="pm" style="margin:4px 0">Travaux : '+esc(f.travaux||"—")+'</p>'
+  +tbl(["Condition","Confirmée"],P.c.map(function(c,i){var ok=S.permit.checks[S.permit.type+"-"+i];return [c,{t:ok?"Oui":"Non",c:ok?"pl1":"pl4"}]}));
+  h+='<h2>Causerie sécurité : '+esc(T.t)+'</h2><ul>'+T.p.map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ul><p><strong>Participants :</strong> '+esc((S.talk.names||"—").split(/\r?\n/).map(function(x){return x.trim()}).filter(Boolean).join(", ")||"—")+'</p>';
+  h+='<h2>Indicateurs</h2>'+tbl(["Heures","Accidents avec arrêt","Jours perdus","Cas enregistrables","Presque-accidents"],[[K.h||"—",K.lti||"—",K.lost||"—",K.rec||"—",K.nm||"—"]]);
+  h+='<h2>Registre des événements</h2>'+(S.log.length?tbl(["Date","Type","Description"],S.log.map(function(e){return [e.d,e.t,e.x||""]})):'<p>Aucun événement enregistré.</p>');
+  h+='<div class="sig"><div><p>Responsable HSE'+(m.hse?' : '+esc(m.hse):'')+'</p><span></span></div><div><p>Chef de chantier'+(m.resp?' : '+esc(m.resp):'')+'</p><span></span></div></div>';
+  return h;
+}
+
+/* ---------- Vue Exports ---------- */
+function fname(ext){var s=(S.meta.site||"chantier").normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[^A-Za-z0-9]+/g,"_").replace(/^_+|_+$/g,"")||"chantier";return "HSE_"+s+"_"+isoToday()+"."+ext}
+function vExport(){
+  return '<section class="card"><h2>Exports et sauvegarde</h2><p class="lead">Tout fonctionne sur cet appareil, sans connexion internet.</p></section>'
+  +'<section class="card"><h3>Excel (.xlsx)</h3><p class="lead" style="margin-bottom:10px">Un classeur de 9 feuilles : synthèse, inspections, non-conformités, risques, permis, événements, indicateurs, causerie et contacts. Filtres et en-têtes figés inclus.</p><div class="row"><button class="btn" data-act="xlsx">Télécharger le classeur Excel</button></div><div id="fb-xlsx"></div></section>'
+  +'<section class="card"><h3>Rapport PDF</h3><p class="lead" style="margin-bottom:10px">Rapport complet mis en page A4. Dans la fenêtre d\'impression, choisissez « Enregistrer au format PDF » comme imprimante. Sur mobile : Imprimer, puis Partager ou Enregistrer en PDF.</p><div class="row"><button class="btn" data-act="pdf">Générer le rapport PDF</button></div><div id="fb-pdf"></div></section>'
+  +'<section class="card"><h3>Sauvegarde des données</h3><p class="lead" style="margin-bottom:10px">Les données sont stockées dans ce navigateur. Faites une sauvegarde régulière, surtout avant de changer d\'appareil ou de vider le navigateur.</p><div class="row"><button class="btn" data-act="backup">Sauvegarder (.json)</button><button class="btn ghost" data-act="restore">Restaurer une sauvegarde</button><button class="btn ghost" data-act="wipe">Tout effacer</button></div><div id="fb-backup"></div></section>';
+}
+function msg(id,t){var e=document.getElementById("fb-"+id);if(e)e.innerHTML='<p class="lead" style="margin-top:8px">'+esc(t)+'</p>'}
+function dl(blob,name){var u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(u)},1500)}
+document.addEventListener("click",function(e){
+  var t=e.target.closest("[data-act]");if(!t)return;var a=t.dataset.act;
+  if(a==="xlsx"){try{var n=fname("xlsx");dl(buildXlsx(),n);msg("xlsx","Classeur généré : "+n)}catch(err){msg("xlsx","Échec de l'export : "+err.message)}}
+  else if(a==="pdf"){
+    $("#printArea").innerHTML=buildPrint();
+    var old=document.title;document.title=fname("pdf").replace(/\.pdf$/,"");
+    window.addEventListener("afterprint",function once(){document.title=old;window.removeEventListener("afterprint",once)});
+    setTimeout(function(){try{window.print()}catch(err){msg("pdf","Impression indisponible : "+err.message)}},80);
+  }
+  else if(a==="backup"){try{var b=fname("json").replace(/^HSE_/,"HSE_sauvegarde_");dl(new Blob([JSON.stringify({app:"carnet-hse-pont",v:1,data:S})],{type:"application/json"}),b);msg("backup","Sauvegarde créée : "+b)}catch(err){msg("backup","Échec : "+err.message)}}
+  else if(a==="restore"){
+    var inp=document.createElement("input");inp.type="file";inp.accept=".json,application/json";
+    inp.onchange=function(){var fl=inp.files&&inp.files[0];if(!fl)return;var rd=new FileReader();
+      rd.onload=function(){try{var p=JSON.parse(rd.result),d=(p&&p.data)?p.data:p;if(!d||typeof d!=="object"||!d.meta)throw new Error("fichier non reconnu");for(var k in d){S[k]=d[k]}save();render();msg("backup","Sauvegarde restaurée.")}catch(err){msg("backup","Impossible de restaurer : "+err.message)}};
+      rd.readAsText(fl)};
+    inp.click();
+  }
+  else if(a==="wipe"){if(confirm("Effacer toutes les données de ce carnet sur cet appareil ? Pensez à faire une sauvegarde avant.")){try{localStorage.removeItem(KEY)}catch(x){}location.reload()}}
+});
+
+var VIEWS={tableau:vTableau,risques:vRisques,inspections:vInspections,permis:vPermis,causeries:vCauseries,indicateurs:vIndicateurs,urgence:vUrgence,export:vExport};
+var tab="tableau";
+
+/* ---------- Rendu ---------- */
+function refreshHead(){var m=S.meta,p=[];if(m.site)p.push(m.site);if(m.ouvrage)p.push(m.ouvrage);p.push(todayStr());$("#hSub").textContent=p.join(" · ")}
+function renderTabs(){$("#tabs").innerHTML=TABS.map(function(t){return '<button class="tab" role="tab" data-act="tab" data-k="'+t[0]+'" aria-selected="'+(t[0]===tab)+'">'+t[1]+'</button>'}).join("")}
+function render(){var y=window.scrollY;$("#main").innerHTML=VIEWS[tab]();renderTabs();refreshHead();window.scrollTo(0,y)}
+function setTab(k){tab=k;try{history.replaceState(null,"","#"+k)}catch(e){}render();window.scrollTo(0,0)}
+
+function refreshLive(path){
+  if(path.indexOf("meta.")===0){refreshHead();return}
+  if(path.indexOf("kpi.")===0){var o=$("#kpiOut");if(o)o.innerHTML=kpiHTML();var n=$("#kpiNm"),nm=parseFloat(S.kpi.nm)||0,l=parseFloat(S.kpi.lti)||0;if(n)n.textContent="Presque-accidents par accident avec arrêt : "+(l>0?fmt(nm/l,1):(nm>0?"aucun accident avec arrêt":"—"))+".";return}
+  if(path.indexOf("permit.f.")===0){var p=$("#pstat"),t=$("#ptxt");if(p)p.innerHTML=permitStatus();if(t)t.textContent=permitText();return}
+  if(path==="talk.names"){var tt=$("#ttxt");if(tt)tt.textContent=talkText();return}
+}
+
+function copyText(src,btn){
+  var el=document.getElementById(src);if(!el)return;var txt=el.textContent;
+  var fb=document.getElementById("fb-"+src);
+  function manual(){if(!fb)return;fb.innerHTML='<p class="lead" style="margin:8px 0 4px">Copie automatique indisponible : sélectionnez le texte ci-dessous.</p><textarea id="fbta-'+src+'" readonly style="min-height:140px"></textarea>';var ta=document.getElementById("fbta-"+src);ta.value=txt;ta.focus();ta.select()}
+  try{navigator.clipboard.writeText(txt).then(function(){var o=btn.textContent;btn.textContent="Copié";setTimeout(function(){btn.textContent=o},1600)},manual)}catch(e){manual()}
+}
+
+/* ---------- Événements ---------- */
+document.addEventListener("click",function(e){
+  var t=e.target.closest("[data-act]");if(!t)return;var a=t.dataset.act;
+  if(a==="tab"){setTab(t.dataset.k)}
+  else if(a==="mat"){var g=+t.dataset.g,p=+t.dataset.p;S.matFilter=(S.matFilter&&S.matFilter[0]===g&&S.matFilter[1]===p)?null:[g,p];save();render()}
+  else if(a==="matclr"){S.matFilter=null;save();render()}
+  else if(a==="matview"){S.matView=t.dataset.v;S.matFilter=null;save();render()}
+  else if(a==="chk"){S.chkCur=t.dataset.id;save();render()}
+  else if(a==="set"){var k=t.dataset.k,v=t.dataset.v;if(S.chk[k]===v)delete S.chk[k];else S.chk[k]=v;save();render()}
+  else if(a==="reset"){var c=CHK.find(function(x){return x.id===S.chkCur});if(c){c.items.forEach(function(_,i){delete S.chk[c.id+"-"+i];delete S.note[c.id+"-"+i]})}save();render()}
+  else if(a==="ptype"){S.permit.type=t.dataset.k;save();render()}
+  else if(a==="pchk"){S.permit.checks[t.dataset.k]=t.checked;save();refreshLive("permit.f.");}
+  else if(a==="copy"){copyText(t.dataset.src,t)}
+  else if(a==="addrisk"){var inp=$("#newrisk"),v2=inp&&inp.value.trim();if(v2){S.custom.push({id:"c"+Date.now(),t:v2,ph:"Site",g:3,p:3,g2:2,p2:2,ctl:[]});save();render()}}
+  else if(a==="delrisk"){S.custom=S.custom.filter(function(r){return r.id!==t.dataset.id});delete S.risks[t.dataset.id];save();render()}
+  else if(a==="addlog"){var d=$("#l-d").value||isoToday(),ty=$("#l-t").value,x=$("#l-x").value.trim();S.log.unshift({d:d,t:ty,x:x});save();render()}
+  else if(a==="dellog"){S.log.splice(+t.dataset.i,1);save();render()}
+  else if(a==="fromlog"){var n={nm:0,lti:0,rec:0};S.log.forEach(function(l){if(l.t==="Presque-accident")n.nm++;if(l.t==="Arrêt de travail"){n.lti++;n.rec++}if(l.t==="Soins médicaux")n.rec++});S.kpi.nm=String(n.nm);S.kpi.lti=String(n.lti);S.kpi.rec=String(n.rec);save();render()}
+});
+document.addEventListener("input",function(e){
+  var el=e.target;if(!el.dataset||!el.dataset.bind)return;
+  var path=el.dataset.bind,v=el.dataset.num?Number(el.value):el.value;
+  setPath(path,v);save();
+  if(el.tagName==="SELECT"&&(path.indexOf("risks.")===0||path==="talk.topic")){render();return}
+  refreshLive(path);
+});
+window.addEventListener("hashchange",function(){var k=location.hash.slice(1);if(VIEWS[k]&&k!==tab){tab=k;render()}});
+
+load();
+var h0=location.hash.slice(1);if(VIEWS[h0])tab=h0;
+render();
+})();
+</script>
+
+</body></html>
